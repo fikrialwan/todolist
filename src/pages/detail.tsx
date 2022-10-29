@@ -322,6 +322,9 @@ export const Detail = () => {
             src={TodoEmptyIllustration}
             alt="Activity Empty Illustration"
             className="object-contain object-top max-w-xl w-full mx-auto"
+            onClick={() => {
+              setIsOpen(true);
+            }}
           />
         )}
       </section>

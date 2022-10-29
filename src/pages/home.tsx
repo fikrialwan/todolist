@@ -64,7 +64,7 @@ export const Home = () => {
           onClick={() => mutation.mutate({ method: "add" })}
         />
       </section>
-      <section className="w-full flex-1">
+      <section className="w-full flex-1" data-cy="activity-item">
         {data?.data?.length > 0 ? (
           <div className="card-container">
             {data.data.map(
