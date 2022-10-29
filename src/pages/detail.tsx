@@ -10,12 +10,13 @@ import {
   CloseIcon,
   DownIcon,
   PencilIcon,
+  TrashIcon,
   UpIcon,
 } from "../component/ui";
 import { BASE_URL } from "../config";
 import { priorityData } from "../data";
 import { queryClient } from "../lib";
-import { PriorityType } from "../types";
+import { PriorityType, TodoType } from "../types";
 import TodoEmptyIllustration from "./../assets/illustrations/todo-empty-state.svg";
 
 export const Detail = () => {
@@ -290,7 +291,31 @@ export const Detail = () => {
       </section>
       <section className="w-full flex-1">
         {todoData?.data?.length > 0 ? (
-          <pre>{JSON.stringify(todoData, null, 2)}</pre>
+          <div className="flex flex-col gap-2">
+            {todoData.data.map((todo: TodoType) => {
+              const priority: PriorityType = priorityData.filter(
+                ({ slug }: PriorityType) => slug === todo.priority
+              )[0];
+              return (
+                <div className="bg-white rounded-xl modal-shadow flex flex-row justify-between items-center py-7 px-6">
+                  <div className="flex flex-row justify-start items-center gap-4">
+                    <div data-cy="todo-item-checkbox" />
+                    <div
+                      data-cy="todo-item-priority-indicator"
+                      className={`${priority.color} w-[14px] h-[14px]`}
+                    />
+                    <h3 data-cy="todo-item-title">{todo.title}</h3>
+                    <button data-cy="todo-item-edit-button">
+                      <PencilIcon />
+                    </button>
+                  </div>
+                  <button data-cy="todo-item-delete-button">
+                    <TrashIcon />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <img
             data-cy="todo-empty-state"
