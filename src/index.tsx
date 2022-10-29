@@ -3,10 +3,8 @@ import "./styles/tailwind.css";
 import * as serviceWorker from "./serviceWorker";
 import React from "react";
 import { RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { router } from "./lib";
-
-const queryClient = new QueryClient();
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient, router } from "./lib";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
