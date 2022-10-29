@@ -1,6 +1,6 @@
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import Layout from "../component/layout";
-import { Home } from "../pages";
+import { Detail, FourOhFour, Home } from "../pages";
 
 export const router = createBrowserRouter([
   {
@@ -10,10 +10,15 @@ export const router = createBrowserRouter([
         <Outlet />
       </Layout>
     ),
+    errorElement: <FourOhFour />,
     children: [
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path: "detail/:activityId",
+        element: <Detail />,
       },
     ],
   },
