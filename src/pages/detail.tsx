@@ -22,7 +22,8 @@ export const Detail = () => {
   const { activityId } = useParams();
   const [isEditedText, setIsEditedText] = useState<boolean>(false);
   const [title, setTitle] = useState<string>();
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [titleTodo, setTitleTodo] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedPriority, setSelectedPriority] = useState<PriorityType>();
   const {
     isLoading,
@@ -30,6 +31,12 @@ export const Detail = () => {
     data: activityData,
   } = useQuery(["todoData"], () =>
     fetch(`${BASE_URL}/activity-groups/${activityId}`).then((res) => res.json())
+  );
+
+  const { data: todoData } = useQuery(["todo"], () =>
+    fetch(`${BASE_URL}/todo-items?activity_group_id=${activityId}`).then(
+      (res) => res.json()
+    )
   );
 
   const activityMutate = useMutation(
@@ -50,6 +57,43 @@ export const Detail = () => {
       },
     }
   );
+
+  const todoMutate = useMutation(
+    async () => {
+      console.log(
+        JSON.stringify({
+          activity_group_id: activityId,
+          title: titleTodo,
+          priority: selectedPriority?.slug,
+        })
+      );
+      await fetch(`${BASE_URL}/todo-items`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          activity_group_id: parseInt(activityId ?? "0"),
+          title: titleTodo,
+          priority: selectedPriority?.slug,
+        }),
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["todo"]);
+      },
+    }
+  );
+
+  const handleAddTodo = async () => {
+    if (titleTodo && selectedPriority) {
+      await todoMutate.mutate();
+      setTitleTodo("");
+      setSelectedPriority(undefined);
+      setIsOpen(false);
+    }
+  };
 
   const changeTitle = async (title: string) => {
     setIsEditedText(false);
@@ -127,18 +171,20 @@ export const Detail = () => {
             className="absolute w-full h-screen top-0 flex flex-col justify-center items-center"
           >
             <Dialog.Panel className="bg-white rounded-xl max-w-md w-full modal-shadow">
-              <Dialog.Title className="px-7 pt-6 pb-4 border-b-[1px] border-b-custom-grey-secondary flex justify-between">
+              <div className="px-7 pt-6 pb-4 border-b-[1px] border-b-custom-grey-secondary flex justify-between">
                 <h3 className="font-semibold text-lg">Tambah List Item</h3>
                 <button onClick={() => setIsOpen(false)}>
                   <CloseIcon />
                 </button>
-              </Dialog.Title>
-              <Dialog.Description className="px-7 pt-9 pb-5 border-b-[1px] border-b-custom-grey-secondary flex flex-col gap-7">
+              </div>
+              <div className="px-7 pt-9 pb-5 border-b-[1px] border-b-custom-grey-secondary flex flex-col gap-7">
                 <div className="flex flex-col gap-1">
                   <label htmlFor="title" className="font-semibold text-xs">
                     NAMA LIST ITEM
                   </label>
                   <input
+                    value={titleTodo}
+                    onChange={(event) => setTitleTodo(event.target.value)}
                     type="text"
                     name="title"
                     placeholder="Tambahkan nama list item"
@@ -155,7 +201,7 @@ export const Detail = () => {
                   >
                     {({ open }) => {
                       return (
-                        <>
+                        <div>
                           <Listbox.Button
                             className={`max-w-[205px] w-full self-start text-left ${
                               open ? "bg-custom-grey-primary" : "bg-white"
@@ -192,16 +238,18 @@ export const Detail = () => {
                               </Listbox.Option>
                             ))}
                           </Listbox.Options>
-                        </>
+                        </div>
                       );
                     }}
                   </Listbox>
                 </div>
-              </Dialog.Description>
+              </div>
               <div className="px-7 flex justify-end pt-3 pb-4">
                 <button
-                  className="py-3 px-6 bg-custom-blue rounded-full text-white"
-                  onClick={() => setIsOpen(false)}
+                  className={`py-3 px-6 bg-custom-blue rounded-full text-white ${
+                    !(titleTodo && selectedPriority) && "opacity-20"
+                  }`}
+                  onClick={handleAddTodo}
                 >
                   Simpan
                 </button>
@@ -211,11 +259,15 @@ export const Detail = () => {
         </div>
       </section>
       <section className="w-full flex-1">
-        <img
-          src={TodoEmptyIllustration}
-          alt="Activity Empty Illustration"
-          className="object-contain object-top max-w-xl w-full mx-auto"
-        />
+        {todoData?.data?.length > 0 ? (
+          <pre>{JSON.stringify(todoData, null, 2)}</pre>
+        ) : (
+          <img
+            src={TodoEmptyIllustration}
+            alt="Activity Empty Illustration"
+            className="object-contain object-top max-w-xl w-full mx-auto"
+          />
+        )}
       </section>
     </div>
   );

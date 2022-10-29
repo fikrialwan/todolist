@@ -3,7 +3,7 @@ import { PriorityType } from "../types";
 export const priorityData: PriorityType[] = [
   {
     slug: "very-high",
-    title: "Veri High",
+    title: "Very High",
     color: "bg-custom-red",
   },
   {
@@ -12,7 +12,7 @@ export const priorityData: PriorityType[] = [
     color: "bg-custom-yellow",
   },
   {
-    slug: "medium",
+    slug: "normal",
     title: "Medium",
     color: "bg-custom-green",
   },
