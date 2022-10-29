@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AddButton, TrashIcon } from "../component/ui";
 import { BASE_URL, EMAIL } from "../config";
-import { queryClient } from "../lib";
+import { formatDate, queryClient } from "../lib";
 import type { ActivityType } from "../types";
 import { formatTextShy } from "../utils";
 import ActivityEmptyIllustration from "./../assets/illustrations/activity-empty-state.svg";
@@ -52,7 +52,7 @@ export const Home = () => {
                     dangerouslySetInnerHTML={{ __html: formatTextShy(title) }}
                   />
                   <div className="flex justify-between">
-                    <time>{created_at}</time>
+                    <time>{formatDate(created_at)}</time>
                     <TrashIcon />
                   </div>
                 </article>
