@@ -3,3 +3,7 @@ export * from "./arrow-sort-icon";
 export * from "./trash-icon";
 export * from "./pencil-icon";
 export * from "./back-icon";
+export * from "./close-icon";
+export * from "./check-icon";
+export * from "./down-icon";
+export * from "./up-icon";

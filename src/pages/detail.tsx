@@ -1,3 +1,4 @@
+import { Dialog, Listbox } from "@headlessui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -5,16 +6,24 @@ import {
   AddButton,
   ArrowSortIcon,
   BackIcon,
+  CheckIcon,
+  CloseIcon,
+  DownIcon,
   PencilIcon,
+  UpIcon,
 } from "../component/ui";
 import { BASE_URL } from "../config";
+import { priorityData } from "../data";
 import { queryClient } from "../lib";
+import { PriorityType } from "../types";
 import TodoEmptyIllustration from "./../assets/illustrations/todo-empty-state.svg";
 
 export const Detail = () => {
   const { activityId } = useParams();
-  const [isEditedText, setIsEditedText] = useState<Boolean>(false);
+  const [isEditedText, setIsEditedText] = useState<boolean>(false);
   const [title, setTitle] = useState<string>();
+  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [selectedPriority, setSelectedPriority] = useState<PriorityType>();
   const {
     isLoading,
     error,
@@ -107,7 +116,98 @@ export const Detail = () => {
           <button className="p-3 rounded-full border-[1px] border-custom-icon-gray">
             <ArrowSortIcon />
           </button>
-          <AddButton onClick={() => {}} />
+          <AddButton
+            onClick={() => {
+              setIsOpen(true);
+            }}
+          />
+          <Dialog
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+            className="absolute w-full h-screen top-0 flex flex-col justify-center items-center"
+          >
+            <Dialog.Panel className="bg-white rounded-xl max-w-md w-full modal-shadow">
+              <Dialog.Title className="px-7 pt-6 pb-4 border-b-[1px] border-b-custom-grey-secondary flex justify-between">
+                <h3 className="font-semibold text-lg">Tambah List Item</h3>
+                <button onClick={() => setIsOpen(false)}>
+                  <CloseIcon />
+                </button>
+              </Dialog.Title>
+              <Dialog.Description className="px-7 pt-9 pb-5 border-b-[1px] border-b-custom-grey-secondary flex flex-col gap-7">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="title" className="font-semibold text-xs">
+                    NAMA LIST ITEM
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="Tambahkan nama list item"
+                    className="py-3 px-4 placeholder:text-custom-icon-grey font-normal text-sm text-custom-black outline-none border-[1px] border-custom-grey-secondary rounded-md"
+                  />
+                </div>
+                <div className="flex flex-col gap-1 relative">
+                  <label htmlFor="title" className="font-semibold text-xs">
+                    PRIORITY
+                  </label>
+                  <Listbox
+                    value={selectedPriority}
+                    onChange={setSelectedPriority}
+                  >
+                    {({ open }) => {
+                      return (
+                        <>
+                          <Listbox.Button
+                            className={`max-w-[205px] w-full self-start text-left ${
+                              open ? "bg-custom-grey-primary" : "bg-white"
+                            } py-3 px-4 text-custom-black outline-none border-[1px] border-custom-grey-secondary rounded-md flex justify-between items-center`}
+                          >
+                            {selectedPriority ? (
+                              <div className="flex items-center">
+                                <div
+                                  className={`${selectedPriority.color} w-[14px] h-[14px] rounded-full mr-4`}
+                                />{" "}
+                                {selectedPriority.title}
+                              </div>
+                            ) : (
+                              "Pilih priority"
+                            )}
+                            {open ? <UpIcon /> : <DownIcon />}
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute top-[67px] bg-white max-w-[205px] w-full text-custom-black outline-none border-[1px] border-custom-grey-secondary">
+                            {priorityData.map((priority) => (
+                              <Listbox.Option
+                                key={priority.slug}
+                                value={priority}
+                                className="outline-none border-[1px] py-3 px-4  border-custom-grey-secondary flex items-center justify-between cursor-pointer"
+                              >
+                                <div className="flex items-center">
+                                  <div
+                                    className={`${priority.color} w-[14px] h-[14px] rounded-full mr-4`}
+                                  />{" "}
+                                  {priority.title}
+                                </div>
+                                {priority.slug === selectedPriority?.slug && (
+                                  <CheckIcon />
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </>
+                      );
+                    }}
+                  </Listbox>
+                </div>
+              </Dialog.Description>
+              <div className="px-7 flex justify-end pt-3 pb-4">
+                <button
+                  className="py-3 px-6 bg-custom-blue rounded-full text-white"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Simpan
+                </button>
+              </div>
+            </Dialog.Panel>
+          </Dialog>
         </div>
       </section>
       <section className="w-full flex-1">
