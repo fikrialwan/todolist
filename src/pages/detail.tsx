@@ -124,7 +124,7 @@ export const Detail = () => {
       )}
       <section className="flex justify-between items-center">
         <div className="flex justify-start items-center gap-6">
-          <Link to="/">
+          <Link to="/" data-cy="todo-back-button">
             <BackIcon />
           </Link>
           {isEditedText ? (
@@ -137,6 +137,7 @@ export const Detail = () => {
             />
           ) : (
             <h1
+              data-cy="todo-title"
               className="text-custom-black font-bold text-4xl"
               onClick={() => setIsEditedText(true)}
             >
@@ -152,37 +153,55 @@ export const Detail = () => {
               }
             }}
             className="z-10"
+            data-cy="todo-title-edit-button"
           >
             <PencilIcon />
           </button>
         </div>
         <div className="flex justify-end items-center gap-4">
-          <button className="p-3 rounded-full border-[1px] border-custom-icon-gray">
-            <ArrowSortIcon />
-          </button>
+          {todoData?.data?.length > 0 && (
+            <button
+              className="p-3 rounded-full border-[1px] border-custom-icon-gray"
+              data-cy="todo-sort-button"
+            >
+              <ArrowSortIcon />
+            </button>
+          )}
           <AddButton
+            datacy="todo-add-button"
             onClick={() => {
               setIsOpen(true);
             }}
           />
           <Dialog
+            data-cy="modal-add"
             open={isOpen}
             onClose={() => setIsOpen(false)}
             className="absolute w-full h-screen top-0 flex flex-col justify-center items-center"
           >
             <Dialog.Panel className="bg-white rounded-xl max-w-md w-full modal-shadow">
               <div className="px-7 pt-6 pb-4 border-b-[1px] border-b-custom-grey-secondary flex justify-between">
-                <h3 className="font-semibold text-lg">Tambah List Item</h3>
-                <button onClick={() => setIsOpen(false)}>
+                <h3 className="font-semibold text-lg" data-cy="modal-add-title">
+                  Tambah List Item
+                </h3>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  data-cy="modal-add-close-button"
+                >
                   <CloseIcon />
                 </button>
               </div>
               <div className="px-7 pt-9 pb-5 border-b-[1px] border-b-custom-grey-secondary flex flex-col gap-7">
                 <div className="flex flex-col gap-1">
-                  <label htmlFor="title" className="font-semibold text-xs">
+                  <label
+                    htmlFor="title"
+                    className="font-semibold text-xs"
+                    data-cy="modal-add-name-title"
+                  >
                     NAMA LIST ITEM
                   </label>
                   <input
+                    data-cy="modal-add-name-input"
                     value={titleTodo}
                     onChange={(event) => setTitleTodo(event.target.value)}
                     type="text"
@@ -192,12 +211,17 @@ export const Detail = () => {
                   />
                 </div>
                 <div className="flex flex-col gap-1 relative">
-                  <label htmlFor="title" className="font-semibold text-xs">
+                  <label
+                    htmlFor="title"
+                    className="font-semibold text-xs"
+                    data-cy="modal-add-priority-title"
+                  >
                     PRIORITY
                   </label>
                   <Listbox
                     value={selectedPriority}
                     onChange={setSelectedPriority}
+                    data-cy="modal-add-priority-dropdown"
                   >
                     {({ open }) => {
                       return (
@@ -222,6 +246,11 @@ export const Detail = () => {
                           <Listbox.Options className="absolute top-[67px] bg-white max-w-[205px] w-full text-custom-black outline-none border-[1px] border-custom-grey-secondary">
                             {priorityData.map((priority) => (
                               <Listbox.Option
+                                data-cy={`modal-add-priority-${
+                                  priority.slug === "normal"
+                                    ? "medium"
+                                    : priority.slug
+                                }`}
                                 key={priority.slug}
                                 value={priority}
                                 className="outline-none border-[1px] py-3 px-4  border-custom-grey-secondary flex items-center justify-between cursor-pointer"
@@ -246,6 +275,7 @@ export const Detail = () => {
               </div>
               <div className="px-7 flex justify-end pt-3 pb-4">
                 <button
+                  data-cy="modal-add-save-button"
                   className={`py-3 px-6 bg-custom-blue rounded-full text-white ${
                     !(titleTodo && selectedPriority) && "opacity-20"
                   }`}
@@ -263,6 +293,7 @@ export const Detail = () => {
           <pre>{JSON.stringify(todoData, null, 2)}</pre>
         ) : (
           <img
+            data-cy="todo-empty-state"
             src={TodoEmptyIllustration}
             alt="Activity Empty Illustration"
             className="object-contain object-top max-w-xl w-full mx-auto"

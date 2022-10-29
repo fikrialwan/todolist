@@ -4,7 +4,6 @@ import { AddButton, TrashIcon } from "../component/ui";
 import { BASE_URL, EMAIL } from "../config";
 import { formatDate, queryClient } from "../lib";
 import type { ActivityType } from "../types";
-import { formatTextShy } from "../utils";
 import ActivityEmptyIllustration from "./../assets/illustrations/activity-empty-state.svg";
 
 interface MutationParameters {
@@ -54,36 +53,56 @@ export const Home = () => {
   return (
     <div className="flex flex-col gap-10">
       <section className="flex justify-between items-center">
-        <h1 className="text-custom-black font-bold text-4xl">Activity</h1>
-        <AddButton onClick={() => mutation.mutate({ method: "add" })} />
+        <h1
+          data-cy="activity-title"
+          className="text-custom-black font-bold text-4xl"
+        >
+          Activity
+        </h1>
+        <AddButton
+          datacy="activity-add-button"
+          onClick={() => mutation.mutate({ method: "add" })}
+        />
       </section>
       <section className="w-full flex-1">
         {data?.data?.length > 0 ? (
           <div className="card-container">
-            {data.data.map(({ id, title, created_at }: ActivityType) => {
-              return (
-                <Link to={`/detail/${id}`} key={id}>
-                  <article className="aspect-square rounded-xl card-shadow bg-white py-6 px-5 flex flex-col">
-                    <h2
-                      className="flex-1 font-bold text-lg"
-                      dangerouslySetInnerHTML={{ __html: formatTextShy(title) }}
-                    />
-                    <div className="flex justify-between">
-                      <time>{formatDate(created_at)}</time>
-                      <TrashIcon
-                        className="cursor-pointer"
-                        onClick={() =>
-                          mutation.mutate({ method: "delete", id })
-                        }
-                      />
-                    </div>
-                  </article>
-                </Link>
-              );
-            })}
+            {data.data.map(
+              ({ id, title, created_at }: ActivityType, index: number) => {
+                return (
+                  <Link
+                    to={`/detail/${id}`}
+                    key={id}
+                    data-cy={`activity-item-${index}`}
+                  >
+                    <article className="aspect-square rounded-xl card-shadow bg-white py-6 px-5 flex flex-col">
+                      <h2
+                        className="flex-1 font-bold text-lg"
+                        data-cy="activity-title"
+                      >
+                        {title}
+                      </h2>
+                      <div className="flex justify-between">
+                        <time data-cy="activity-date">
+                          {formatDate(created_at)}
+                        </time>
+                        <TrashIcon
+                          className="cursor-pointer"
+                          onClick={() =>
+                            mutation.mutate({ method: "delete", id })
+                          }
+                          data-cy="activity-item-delete-button"
+                        />
+                      </div>
+                    </article>
+                  </Link>
+                );
+              }
+            )}
           </div>
         ) : (
           <img
+            data-cy="activity-empty-state"
             src={ActivityEmptyIllustration}
             alt="Activity Empty Illustration"
             className="object-contain object-top max-w-xl w-full mx-auto"
