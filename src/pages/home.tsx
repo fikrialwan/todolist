@@ -62,11 +62,8 @@ export const Home = () => {
           <div className="card-container">
             {data.data.map(({ id, title, created_at }: ActivityType) => {
               return (
-                <Link to={`/detail/${id}`}>
-                  <article
-                    key={id}
-                    className="aspect-square rounded-xl card-shadow bg-white py-6 px-5 flex flex-col"
-                  >
+                <Link to={`/detail/${id}`} key={id}>
+                  <article className="aspect-square rounded-xl card-shadow bg-white py-6 px-5 flex flex-col">
                     <h2
                       className="flex-1 font-bold text-lg"
                       dangerouslySetInnerHTML={{ __html: formatTextShy(title) }}

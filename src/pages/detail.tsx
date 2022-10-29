@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -8,6 +8,7 @@ import {
   PencilIcon,
 } from "../component/ui";
 import { BASE_URL } from "../config";
+import { queryClient } from "../lib";
 import TodoEmptyIllustration from "./../assets/illustrations/todo-empty-state.svg";
 
 export const Detail = () => {
@@ -21,6 +22,30 @@ export const Detail = () => {
   } = useQuery(["todoData"], () =>
     fetch(`${BASE_URL}/activity-groups/${activityId}`).then((res) => res.json())
   );
+
+  const activityMutate = useMutation(
+    async (title: string) => {
+      await fetch(`${BASE_URL}/activity-groups/${activityId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+        }),
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["todoData"]);
+      },
+    }
+  );
+
+  const changeTitle = async (title: string) => {
+    setIsEditedText(false);
+    await activityMutate.mutate(title);
+  };
 
   useEffect(() => {
     if (activityData) {
@@ -41,7 +66,7 @@ export const Detail = () => {
       {isEditedText && (
         <div
           className="absolute top-0 w-full h-screen bg-transparent"
-          onClick={() => setIsEditedText(false)}
+          onClick={() => changeTitle(title ?? "")}
         />
       )}
       <section className="flex justify-between items-center">
@@ -66,7 +91,13 @@ export const Detail = () => {
             </h1>
           )}
           <button
-            onClick={() => setIsEditedText((prev) => !prev)}
+            onClick={async () => {
+              if (isEditedText) {
+                await changeTitle(title ?? "");
+              } else {
+                setIsEditedText(true);
+              }
+            }}
             className="z-10"
           >
             <PencilIcon />
